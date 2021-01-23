@@ -1,24 +1,44 @@
-import logo from './logo.svg';
-import './App.css';
+// Lib
+import React, { useState } from 'react';
+import { Route } from 'react-router-dom';
+
+// Context
+import { SearchContext } from './contexts/SearchContext';
+
+// Component
+import JobList from './components/JobList';
+import JobItem from './components/JobItem';
+import Loader from './components/Loader';
+import SearchBar from './components/SearchBar';
 
 function App() {
+  const [searchHistory, setSearchHistory] = useState([]);
+  const [jobList, setJobList] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <SearchContext.Provider
+      value={{
+        searchHistory,
+        setSearchHistory,
+        jobList,
+        setJobList,
+        setLoading,
+      }}
+    >
+      {loading && <Loader />}
+      <SearchBar />
+
+      <Route path="/:id" render={(props) => <JobItem {...props} />} />
+      <Route exact path="/">
+        <JobList
+          {...{
+            jobList,
+            loading,
+          }}
+        />
+      </Route>
+    </SearchContext.Provider>
   );
 }
 
